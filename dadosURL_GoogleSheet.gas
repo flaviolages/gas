@@ -1,0 +1,57 @@
+// Google App Script
+// Passndo dados via URL para Planilha do Google
+//
+//
+// By Flávio Lages Jr
+// Date: 05/2019
+
+function doGet(e){
+
+  //Recebe os dados da URL e guarda em string com JSON
+  var parametros = JSON.stringify(e);
+
+
+  //Identifica a planiha
+  var idPlanilha = ''; //Ex: https://docs.google.com/spreadsheets/d/ ID FICA ENTRE ESSAS BARRAS /edit#gid=0
+  //Ativa e verifica a planilha
+  var planilha = SpreadsheetApp.openById(idPlanilha).getActiveSheet();
+
+
+  //Cria um vetor dados
+  var dados = [];
+
+  //Percorre toda STRING
+  for(parametros in e.parameter){
+
+    //Cada loop pega um valor e armazena nastring valor
+    var valor = e.parameter[parametros];
+
+    switch(parametros){
+      case 'a':
+          dados[1] = valor;
+          break;
+      case 'b':
+          dados[2] = valor;
+          break;
+
+    }//End switch
+
+  }//End For
+
+
+  //Nova linha na planilha
+  var novaLinha = planilha.getLastRow() + 1;
+  //Coloca data na coluna 1
+  dados[0] = new Date();
+  //Escreve nova linha e adiciona DATA
+  var addnaPlanilha = planilha.getRange(novaLinha, 1, 1,dados.length);
+  //Adiciona os dados
+  addnaPlanilha.setValues([dados]);
+
+
+
+  //Retorna os valores na pagiana web, fins de teste!
+  var txtSaida = ContentService.createTextOutput("Temperatura: "+ dados[1] + ", Umidade: " + dados[2]);
+  return txtSaida;
+
+}//End doGet
